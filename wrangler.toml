@@ -23,7 +23,7 @@ migrations_dir = "migrations"
 # Имэйл (Resend): MAIL_FROM — Resend-д баталгаажуулсан домэйны хаяг, жишээ нь "Дадлагын систем <no-reply@your-domain.mn>".
 # MAIL_API_KEY тохируулаагүй үед имэйл явахгүй, зөвхөн log-д бичигдэнэ.
 [vars]
-MAIL_FROM = "y"
+MAIL_FROM = "Дадлага <onboarding@resend.dev>"
 # Нууц үгийн хэшийн давталт (PBKDF2). Workers Free (10 мс CPU) → 50000; Workers Paid → 100000 (дээд хязгаар).
 PASSWORD_ITERATIONS = "50000"
 # CAPTCHA (заавал биш): Turnstile site key. Secret нь `wrangler secret put TURNSTILE_SECRET`.

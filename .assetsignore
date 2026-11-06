@@ -1,0 +1,18 @@
+# Cloudflare-д статик файлаар нийтлэхгүй зүйлс (зөвхөн index.html, favicon.svg, src/, _headers нийтлэгдэнэ).
+server
+migrations
+scripts
+docs
+node_modules
+.data
+_to_delete
+.wrangler
+.git
+dev-server.mjs
+wrangler.toml
+package.json
+package-lock.json
+*.md
+.gitignore
+.dev.vars
+.dev.vars.example

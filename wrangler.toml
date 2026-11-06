@@ -1,0 +1,39 @@
+# Cloudflare Workers тохиргоо: нэг Worker нь UI-г (статик файл) болон /api-г хоёуланг нь үйлчилнэ.
+# Анх: `npm run cf:setup` — D1, R2 үүсгэж database_id-г энд бичнэ, migration, өгөгдөл, deploy, SIGNING_SECRET бүгдийг хийнэ.
+# Дараагийн шинэчлэл: `npm run cf:deploy`. Бүрэн тайлбар: README.md §7.
+# Нууц утгууд (MAIL_API_KEY, SIGNING_SECRET, TURNSTILE_SECRET) энд БИЧИХГҮЙ — `npx wrangler secret put <НЭР>`.
+name = "pm2"
+main = "server/index.js"
+compatibility_date = "2025-09-01"
+
+[assets]
+directory = "."          # index.html, src/ — .assetsignore-д заасан backend файлууд нийтлэгдэхгүй
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pm2-db"
+database_id = "7b7d17dd-e24b-4661-b7ec-e4d4714c19b0"
+migrations_dir = "migrations"
+
+# [[r2_buckets]]
+# binding = "FILES"
+# bucket_name = "pm2-files"
+# 
+# Имэйл (Resend): MAIL_FROM — Resend-д баталгаажуулсан домэйны хаяг, жишээ нь "Дадлагын систем <no-reply@your-domain.mn>".
+# MAIL_API_KEY тохируулаагүй үед имэйл явахгүй, зөвхөн log-д бичигдэнэ.
+[vars]
+MAIL_FROM = "y"
+# Нууц үгийн хэшийн давталт (PBKDF2). Workers Free (10 мс CPU) → 50000; Workers Paid → 100000 (дээд хязгаар).
+PASSWORD_ITERATIONS = "50000"
+# CAPTCHA (заавал биш): Turnstile site key. Secret нь `wrangler secret put TURNSTILE_SECRET`.
+# TURNSTILE_SITE_KEY = "0x4AAAA..."
+
+# Өөрийн домэйн (заавал биш): домэйн Cloudflare дээр байвал дараахыг идэвхжүүлнэ.
+# [[routes]]
+# pattern = "practice.your-domain.mn"
+# custom_domain = true
+
+# Worker-ийн log (имэйл түлхүүргүй үед кодууд, холбоосууд энд бичигдэнэ): Dashboard → Workers → pm2 → Logs, эсвэл `npx wrangler tail`.
+[observability]
+enabled = true

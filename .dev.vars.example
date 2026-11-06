@@ -1,0 +1,9 @@
+# wrangler dev (жинхэнэ workerd орчинд локалаар) эдгээрийг .dev.vars файлаас уншина. .dev.vars нь git-д ордоггүй.
+# Хуулах: cp .dev.vars.example .dev.vars
+MAIL_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
+MAIL_FROM=Дадлагын систем <no-reply@your-domain.mn>
+# CAPTCHA туршихад (Cloudflare-ийн туршилтын түлхүүр: secret 1x0000000000000000000000000000000AA, site key 1x00000000000000000000AA):
+# TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+# TURNSTILE_SITE_KEY=1x00000000000000000000AA
+# Гэрээний гарын үсгийн нотолгооны түлхүүр (production-д заавал: npx wrangler secret put SIGNING_SECRET)
+SIGNING_SECRET=change-me-to-a-long-random-string

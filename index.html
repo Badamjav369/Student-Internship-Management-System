@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="mn" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F5F5FA">
+  <title>Дадлагын нэгдсэн удирдлага</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap">
+  <!-- Горимыг зураг гарахаас өмнө тохируулж, цагаан/хар анивчихаас сэргийлнэ -->
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('pm2.theme'); } catch (e) { /* хадгалалт хориглогдсон */ }
+      if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="stylesheet" href="./src/styles/app.css">
+  <script type="module" src="./src/js/main.js"></script>
+</head>
+<body>
+  <p id="boot" class="boot">Ачаалж байна…</p>
+  <noscript><p class="boot">Энэ систем ажиллахын тулд JavaScript шаардлагатай.</p></noscript>
+</body>
+</html>

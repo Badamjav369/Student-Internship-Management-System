@@ -1,0 +1,25 @@
+{
+  "name": "internship-management",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Оюутны дадлагын нэгдсэн удирдлагын веб систем — UI (HTML, CSS, JS, Web Components) + backend (Cloudflare Worker, D1, R2)",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch-path=server --watch-path=migrations dev-server.mjs",
+    "dev:reset": "node dev-server.mjs --reset",
+    "check": "node scripts/check.mjs",
+    "cf:setup": "node scripts/cf-setup.mjs",
+    "cf:migrate": "wrangler d1 migrations apply pm2-db --remote",
+    "cf:deploy": "node scripts/preflight.mjs && wrangler d1 migrations apply pm2-db --remote && wrangler deploy",
+    "cf:logs": "wrangler tail",
+    "cf:smoke": "node scripts/smoke.mjs",
+    "cf:preflight": "node scripts/preflight.mjs",
+    "cf:local": "wrangler dev --local --persist-to .wrangler/state"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}

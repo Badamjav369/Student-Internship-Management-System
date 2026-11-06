@@ -1,0 +1,46 @@
+/* 3/6 BRAND — системийн өөрийн онцлог: фонт, үндсэн (ягаан) өнгө, нүүрний картын градиент, лого.
+   Брэндийн өнгө/фонтыг солих бол зөвхөн энэ файлыг засна. */
+:root {
+  --font: 'Rubik', var(--font-system);
+
+  --accent: var(--violet-500);
+  --accent-hover: var(--violet-550);
+  --on-accent: var(--slate-0);
+  --accent-text: var(--violet-600);
+  --accent-soft: var(--violet-100);
+  --accent-soft-2: var(--violet-50);
+  --focus: var(--violet-500);
+  --yellow: var(--yellow-400);
+  --shadow-accent: 0 10px 20px -12px rgb(var(--violet-glow-rgb) / 0.9);
+
+  /* Нүүрний карт: «Шөнийн тэнгэр» градиент */
+  --hero-bg: linear-gradient(160deg, var(--violet-650) 0%, var(--violet-500) 45%, var(--violet-350) 100%);
+  --hero-ink: var(--slate-0);
+  --hero-ink-2: rgb(var(--white-rgb) / 0.84);
+  --hero-chip: rgb(var(--white-rgb) / 0.18);
+  --hero-orb: rgb(var(--white-rgb) / 0.08);
+  --hero-path-done: var(--slate-0);
+  --hero-path-track: rgb(var(--white-rgb) / 0.3);
+  --hero-path-on: var(--violet-650);
+  --hero-shadow: 0 22px 40px -26px rgb(81 65 224 / 0.8);
+}
+
+:root[data-theme="dark"] {
+  --accent: var(--violet-450);
+  --accent-hover: var(--violet-400);
+  --accent-text: var(--violet-300);
+  --accent-soft: var(--violet-850);
+  --accent-soft-2: var(--violet-900);
+  --focus: var(--violet-300);
+  --shadow-accent: none;
+
+  --hero-bg: linear-gradient(160deg, var(--violet-950) 0%, var(--violet-875) 50%, var(--violet-800) 100%);
+  --hero-ink: #f3f1ff;
+  --hero-ink-2: #b9b4de;
+  --hero-chip: rgb(var(--white-rgb) / 0.09);
+  --hero-orb: rgb(183 174 255 / 0.06);
+  --hero-path-done: var(--violet-300);
+  --hero-path-track: rgb(183 174 255 / 0.24);
+  --hero-path-on: var(--violet-950);
+  --hero-shadow: none;
+}

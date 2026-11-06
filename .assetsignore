@@ -2,6 +2,7 @@
 server
 migrations
 scripts
+tests
 docs
 node_modules
 .data

@@ -2,7 +2,7 @@
 # Анх: `npm run cf:setup` — D1, R2 үүсгэж database_id-г энд бичнэ, migration, өгөгдөл, deploy, SIGNING_SECRET бүгдийг хийнэ.
 # Дараагийн шинэчлэл: `npm run cf:deploy`. Бүрэн тайлбар: README.md §7.
 # Нууц утгууд (MAIL_API_KEY, SIGNING_SECRET, TURNSTILE_SECRET) энд БИЧИХГҮЙ — `npx wrangler secret put <НЭР>`.
-name = "pm2"
+name = "sims"
 main = "server/index.js"
 compatibility_date = "2025-09-01"
 
@@ -16,10 +16,11 @@ database_name = "pm2-db"
 database_id = "7b7d17dd-e24b-4661-b7ec-e4d4714c19b0"
 migrations_dir = "migrations"
 
-# [[r2_buckets]]
-# binding = "FILES"
-# bucket_name = "pm2-files"
-# 
+# Файлын сан (R2): bucket-ийг `npx wrangler r2 bucket create pm2-files` (эсвэл `npm run cf:setup`) үүсгэсэн байх ёстой, эс бөгөөс deploy амжихгүй.
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "pm2-files"
+
 # Имэйл (Resend): MAIL_FROM — Resend-д баталгаажуулсан домэйны хаяг, жишээ нь "Дадлагын систем <no-reply@your-domain.mn>".
 # MAIL_API_KEY тохируулаагүй үед имэйл явахгүй, зөвхөн log-д бичигдэнэ.
 [vars]
@@ -34,6 +35,6 @@ PASSWORD_ITERATIONS = "50000"
 # pattern = "practice.your-domain.mn"
 # custom_domain = true
 
-# Worker-ийн log (имэйл түлхүүргүй үед кодууд, холбоосууд энд бичигдэнэ): Dashboard → Workers → pm2 → Logs, эсвэл `npx wrangler tail`.
+# Worker-ийн log (имэйл түлхүүргүй үед кодууд, холбоосууд энд бичигдэнэ): Dashboard → Workers → sims → Logs, эсвэл `npx wrangler tail`.
 [observability]
 enabled = true

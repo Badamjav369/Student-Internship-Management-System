@@ -1,6 +1,6 @@
 // Cloudflare-д нэг командаар байршуулах: `npm run cf:setup`
 // Дахин ажиллуулахад аюулгүй — хийгдсэн алхмыг алгасна (D1, R2 байгаа бол ашиглана, өгөгдөлтэй бол өгөгдөл оруулахгүй, secret байгаа бол солихгүй).
-// Алхам: wrangler суулгах → нэвтрэх → D1 + R2 (идэвхжээгүй бол файлыг D1-д хадгална) → тохиргоо (асуулт) → migration → өгөгдөл → deploy → SIGNING_SECRET → дүгнэлт.
+// Алхам: wrangler суулгах → нэвтрэх → D1 + R2 → тохиргоо (асуулт) → migration → өгөгдөл → deploy → SIGNING_SECRET → дүгнэлт.
 // Туршилтад: WRANGLER_BIN=<хуурамч wrangler> бол npx-ийн оронд түүнийг дуудна.
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -83,16 +83,11 @@ if (!UUID.test(dbId ?? '')) {
   toml = toml.replace(/database_id\s*=\s*"[^"]*"/, `database_id = "${dbId}"`);
   await writeFile(TOML, toml);
 } else say('  ✓ D1 (wrangler.toml-д бичигдсэн)');
-const R2_BLOCK = '[[r2_buckets]]\nbinding = "FILES"\nbucket_name = "pm2-files"\n';
-const R2_OFF = R2_BLOCK.replace(/^/gm, '# ');
-const useR2 = async (on) => { toml = await readFile(TOML, 'utf8'); toml = on ? toml.replace(R2_OFF, R2_BLOCK) : toml.replace(R2_BLOCK, R2_OFF); await writeFile(TOML, toml); };
 const bucket = wrangler(['r2', 'bucket', 'create', BUCKET]);
-if (bucket.ok) { say('  ✓ R2 bucket үүслээ'); await useR2(true); }
-else if (/already exists|already own/i.test(bucket.out)) { say('  ✓ R2 bucket өмнө нь үүссэн'); await useR2(true); }
-else if (/enable R2|R2 is not enabled|10042|purchase/i.test(bucket.out)) {
-  say('  ! R2 идэвхжээгүй (карт шаардана) — файлыг D1 өгөгдлийн санд хадгална. Дараа нь R2 идэвхжүүлбэл `npm run cf:setup`-ийг дахин ажиллуулна.');
-  await useR2(false);
-} else fail(`R2 bucket үүсгэж чадсангүй:\n${bucket.out}`);
+if (bucket.ok) say('  ✓ R2 bucket үүслээ');
+else if (/already exists|already own/i.test(bucket.out)) say('  ✓ R2 bucket өмнө нь үүссэн');
+else if (/enable R2|R2 is not enabled|10042|purchase/i.test(bucket.out)) fail('R2 идэвхжээгүй. Dashboard → R2 Object Storage → «Enable / Purchase R2» (карт бүртгэнэ, 10 GB үнэгүй) хийгээд дахин ажиллуулна уу.');
+else fail(`R2 bucket үүсгэж чадсангүй:\n${bucket.out}`);
 
 step(4, 'Тохиргоо');
 const paid = await yes('Workers Paid ($5/сар) төлөвлөгөөтэй юу? Үгүй бол Free-д тохирох нууц үгийн тохиргоо ашиглана', false);

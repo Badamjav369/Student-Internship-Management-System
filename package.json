@@ -8,6 +8,7 @@
     "dev": "node --watch-path=server --watch-path=migrations dev-server.mjs",
     "dev:reset": "node dev-server.mjs --reset",
     "check": "node scripts/check.mjs",
+    "test": "node tests/run.mjs",
     "cf:setup": "node scripts/cf-setup.mjs",
     "cf:migrate": "wrangler d1 migrations apply pm2-db --remote",
     "cf:deploy": "node scripts/preflight.mjs && wrangler d1 migrations apply pm2-db --remote && wrangler deploy",

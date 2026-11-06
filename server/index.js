@@ -1,5 +1,5 @@
 // Cloudflare Worker-ийн эхлэл: /api/* → маршрут, бусад нь статик файл (env.ASSETS — index.html, src/).
-// Холболт (wrangler.toml): DB — D1, FILES — R2 (байхгүй бол файлыг D1-д хадгална), ASSETS — статик. Локалд мөн адил (dev-server.mjs --api).
+// Холболт (wrangler.toml): DB — D1, FILES — R2 (файл), ASSETS — статик. Локалд мөн адил (dev-server.mjs --api).
 import { createRouter } from './lib/router.js';
 import { HttpError, errorResponse, json } from './lib/http.js';
 import { database } from './lib/db.js';
@@ -7,7 +7,6 @@ import { authorize, currentUser } from './lib/auth.js';
 import { routes as auth } from './modules/auth.js';
 import { routes as notifications } from './modules/notifications.js';
 import { routes as files } from './modules/files.js';
-import { d1Files } from './lib/d1-files.js';
 import { routes as admin } from './modules/admin/index.js';
 import { routes as student } from './modules/student/index.js';
 import { routes as supervisor } from './modules/supervisor/index.js';
@@ -48,7 +47,7 @@ export default {
   async fetch(request, env) {
     if (!new URL(request.url).pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
     try {
-      const response = await handle(request, env.FILES ? env : { ...env, FILES: d1Files(env.DB) });
+      const response = await handle(request, env);
       response.headers.set('cache-control', response.headers.get('cache-control') ?? 'no-store');
       return response;
     } catch (error) {

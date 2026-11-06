@@ -126,7 +126,7 @@ server/
 │  ├─ contracts.js         Гуравласан гэрээний домэйн: баримт, хэш, гарын үсэг (зурсан/код), баталгаажуулалт, маршрутын угсралт `signingRoutes` (оюутан, дадлага удирдагч, эрхлэгчийн маршрут дуудна)
 │  └─ access.js            Хэн аль дадлагыг харах вэ (дүрээр) — файл татах эрх үүнээс
 └─ local/bindings.js       ЗӨВХӨН локалд: D1 → node:sqlite, R2 → файл (`dev-server.mjs`)
-migrations/0001_core.sql, 0002_rate_limits.sql, 0003_semester_features.sql, 0004_contract_signing.sql, 0005_organization_logo.sql, 0006_file_chunks.sql   D1 (SQLite) бүтэц. Анх байршуулах хүртэл энэ файлд нэмэгдэнэ (шинэчилсний дараа локалд `npm run dev:reset`); байршуулсны дараах өөрчлөлт 0005_*.sql
+migrations/0001_core.sql, 0002_rate_limits.sql, 0003_semester_features.sql, 0004_contract_signing.sql, 0005_organization_logo.sql, 0006_file_chunks.sql (одоо ашиглагддаггүй)   D1 (SQLite) бүтэц. Анх байршуулах хүртэл энэ файлд нэмэгдэнэ (шинэчилсний дараа локалд `npm run dev:reset`); байршуулсны дараах өөрчлөлт 0005_*.sql
 scripts/cf-setup.mjs, seed.mjs, demo.sql, preflight.mjs, smoke.mjs   Cloudflare-д нэг командаар байршуулах / демо өгөгдөл / анхны админ / deploy шалгалт / smoke тест
 wrangler.toml, .assetsignore, _headers   Cloudflare тохиргоо
 ```
@@ -140,13 +140,21 @@ npm run check        # эсвэл: node scripts/check.mjs
 ```
 JS синтакс (`src/`, `server/`), import-ын зам, CSS `@import`, `!important`/`innerHTML` байхгүй эсэхийг шалгана. Энэ нь **браузерт зөв ажиллаж буйг баталдаггүй** — энэ бол зөвхөн хурдан статик шалгалт.
 
+**Автомат тест** (`tests/`, Playwright): дүр бүрийн ажлын урсгал (API + хөтөч, 12 файл) ба бүх дэлгэцийн шалгалт (1280/390 px, гэрэл/харанхуй, 7 файл). Тест бүрийн өмнө демо өгөгдөлтэй локал сервер (порт 5174) шинээр асна.
+
+```bash
+npm i --no-save playwright && npx playwright install chromium   # нэг удаа
+npm test                          # бүгд (~15 минут)
+node tests/run.mjs student-flow   # сонгосон тест
+```
+
 ## 7. Cloudflare дээр байршуулах (Workers + D1 + R2)
 
 Нэг Worker нь UI-г (статик файл) болон `/api`-г хоёуланг нь үйлчилнэ. Build алхам **хэрэггүй**.
 
 **А. Таны хийх зүйл (нэг удаа)**
 1. Cloudflare бүртгэл (dash.cloudflare.com, үнэгүй).
-2. **R2 (заавал биш)**: Dashboard → R2 Object Storage → «Enable / Purchase R2». Үнэгүй хэмжээ (10 GB), гэхдээ Cloudflare карт бүртгэхийг шаарддаг. **Идэвхжүүлээгүй бол `npm run cf:setup` өөрөө алгасаад файлыг D1 өгөгдлийн санд (`file_chunks`, 5 GB хүртэл) хадгална** — Workers Free дээр том (хэдэн МБ) файл удаан байж болно. Дараа нь R2 идэвхжүүлбэл `cf:setup`-ийг дахин ажиллуулахад R2 руу шилжинэ (өмнө D1-д хадгалсан файлууд автоматаар шилжихгүй).
+2. **R2 (заавал)**: Dashboard → R2 Object Storage → «Enable / Purchase R2». Үнэгүй хэмжээ (10 GB), гэхдээ Cloudflare карт бүртгэхийг шаарддаг. Бүх файл (гэрээ, тайлан, дэвтрийн хавсралт, лого, загвар) R2-д хадгалагдана; `pm2-files` bucket-ийг `npm run cf:setup` үүсгэнэ (гараар: `npx wrangler r2 bucket create pm2-files`). Bucket байхгүй бол deploy амжихгүй.
 3. **workers.dev дэд домэйн**: Dashboard → Workers & Pages-ийг нэг удаа нээж дэд домэйн сонгоно (шинэ бүртгэлд).
 4. Компьютерт Node.js 22.13+ (`node -v`).
 
@@ -174,7 +182,7 @@ npm run cf:deploy                                          # код өөрчил
 - **`PASSWORD_ITERATIONS`** (`[vars]`): нууц үгийн PBKDF2 давталт. 100000 давталт ~16 мс CPU — Workers **Free**-ийн 10 мс хязгаараас хэтэрч нэвтрэхэд 1102 алдаа гарах эрсдэлтэй тул Free-д 50000 (~7 мс), Paid-д 100000. Хэш бүр өөрийн давталтын тоог хадгалдаг тул солиход хуучин нууц үг ажилласаар; тоог нэмбэл хэрэглэгч нэвтрэх үед шинэ хэш болно.
 - **Хязгаар**: D1-ийн нэг query-д 100-аас ихгүй параметр — олон id-тай шүүлтүүрийг `json_each(?)`-ээр нэг параметрээр дамжуулна. Workers Free-д нэг хүсэлтэд гадаад `fetch` 50 хүртэл (имэйлийг batch-аар).
 - **Log**: `[observability]` идэвхтэй — Dashboard → Workers → pm2 → Logs.
-- **Демо файлууд**: демо өгөгдлийн файлууд (`seed/...`) R2-д байхгүй тул татахад нэг хуудас «Demo file» PDF буцаана (`server/lib/files.js`). Шинээр байршуулсан файл R2-д (эсвэл R2-гүй бол D1-д) хадгалагдана.
+- **Демо файлууд**: демо өгөгдлийн файлууд (`seed/...`) R2-д байхгүй тул татахад нэг хуудас «Demo file» PDF буцаана (`server/lib/files.js`). Шинээр байршуулсан файл R2-д хадгалагдана.
 - Статик файлаас `.assetsignore`-д заасан backend файлууд (server/, migrations/, scripts/…) нийтлэгдэхгүй.
 - Гараар (скриптгүй) хийх бол: `npx wrangler d1 create pm2-db` → id-г `wrangler.toml`-д → `npx wrangler r2 bucket create pm2-files` → `npm run cf:migrate` → `node scripts/seed.mjs --admin you@school.edu "НууцҮг123" > admin.sql` → `npx wrangler d1 execute pm2-db --remote --file admin.sql` → `npm run cf:deploy` → `npx wrangler secret put SIGNING_SECRET`.
 
@@ -201,4 +209,4 @@ node scripts/smoke.mjs http://localhost:8787  # өөр цонхонд
 - Оюутанд нэг л идэвхтэй дадлага харагдана (өмнөх улирлын дадлага сонгогч байхгүй).
 - Rubik фонт Google Fonts CDN-ээс ачаалагдана. Production дээр фонтын файлыг төсөлд хадгалж (`@font-face`) өөрийн домэйнээс өгөх нь дээр.
 - Өнгөний contrast (WCAG)-ыг хэмжиж шалгаагүй; дэлгэц уншигчаар шалгаагүй.
-- Автомат тест (unit/e2e) төсөлд **орсонгүй**; зөвхөн `npm run check`. Хуудас, дамжлагуудыг Chromium дээр Playwright скриптээр (төслийн гаднах, түр хавтсанд) шалгасан; Firefox, Safari, жинхэнэ утсан дээр шалгагдаагүй.
+- Автомат тест зөвхөн Chromium дээр (`npm test`); Firefox, Safari, жинхэнэ утсан дээр шалгагдаагүй. Unit тест, ачааллын туршилт байхгүй.

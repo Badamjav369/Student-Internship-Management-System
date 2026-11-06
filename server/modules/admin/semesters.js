@@ -48,7 +48,8 @@ async function update({ db, request, params }) {
     holidays: [(v) => (v !== undefined && (!Array.isArray(v) || v.some((d) => date(d) || !d)) ? 'Огноо буруу байна.' : null)] };
   let last = null;
   for (const r of RANGES) {
-    rules[`${r}_from`] = [date, (v) => (v && last && v < last ? 'Өмнөх үе шатаас эрт эхэлж болохгүй.' : null)];
+    const prev = last;
+    rules[`${r}_from`] = [date, (v) => (v && prev && v < prev ? 'Өмнөх үе шатаас эрт эхэлж болохгүй.' : null)];
     rules[`${r}_to`] = [date, (v, d) => (v && d[`${r}_from`] && d[`${r}_from`] > v ? 'Дуусах өдөр эхлэх өдрөөс өмнө байна.' : null)];
     last = data[`${r}_from`] ?? last;
   }

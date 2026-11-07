@@ -72,6 +72,7 @@ npm run check                                                  # статик ш
 npm i --no-save playwright && npx playwright install chromium  # нэг удаа
 npm test                                                       # бүх тест (~15 минут)
 node tests/run.mjs student-flow                                # нэг тест
+HEADED=1 node tests/run.mjs student-flow                      # хөтчийг нүдээр харж ажиллуулах (PowerShell: $env:HEADED=1)
 ```
 
 `tests/` нь дүр бүрийн ажлын урсгал (API + хөтөч) болон бүх дэлгэцийг 1280/390 px өргөнд, гэрэл/харанхуй горимд шалгана. Тест бүрийн өмнө демо өгөгдөлтэй локал сервер (порт 5174) шинээр асна.
@@ -116,5 +117,6 @@ npx wrangler d1 execute pm2-db --remote --file .data/reseed.sql
 
 - Нууц үг PBKDF2-SHA256, session нь HttpOnly cookie.
 - Буруу нууц үгийг 5 удаа оруулбал 15 минут түгжинэ.
+- 5 минут идэвхгүй бол систем автоматаар гаргана: хөтөч өөрөө гарч, сервер ч session-ийг дуусгана (хүсэлт бүрт сунгана).
 - Өөрчлөх хүсэлт бүр CSRF толгойтой, эрх нь маршрут бүр дээр шалгагдана.
 - Файлыг татахад эрх шалгагдана.

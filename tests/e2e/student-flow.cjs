@@ -3,7 +3,7 @@ let fails = 0;
 const ok = (c, m) => { if (!c) { fails++; console.log('FAIL', m); } else console.log('ok  ', m); };
 const B = 'http://localhost:5174';
 (async () => {
-  const b = await chromium.launch();
+  const b = await chromium.launch({ headless: !process.env.HEADED, slowMo: process.env.HEADED ? 300 : 0 });
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage(); const errs = [];
   page.on('pageerror', (e) => errs.push('pageerror ' + e.message));

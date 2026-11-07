@@ -3,9 +3,10 @@
 //   нэвтэрсэн, зөвшөөрсөн → <app-shell> + router. Хоёр router нэг хэзээ ч зэрэг ажиллахгүй.
 import './components/app-shell.js';
 import './components/auth-shell.js';
-import './components/toast-region.js';
+import { toast } from './components/toast-region.js';
+import { watchIdle } from './core/idle.js';
 import { createRouter, replaceHash } from './core/router.js';
-import { consentRequired, getRole, getSession, isSignedIn } from './data/session-api.js';
+import { consentRequired, getRole, getSession, isSignedIn, logout } from './data/session-api.js';
 import { ROLE_NAV } from './nav.js';
 import { authRoutes, routesOf } from './routes.js';
 
@@ -57,9 +58,17 @@ async function mountApp() {
   router.start();
 }
 
+// 5 минут идэвхгүй бол системээс гаргана (core/idle.js); нэвтэрсэн үед л ажиллана.
+let stopIdle = null;
+function syncIdle() {
+  if (isSignedIn() && !stopIdle) stopIdle = watchIdle(async () => { stopIdle = null; await logout(); toast('5 минут идэвхгүй байсан тул системээс гарлаа.'); });
+  else if (!isSignedIn() && stopIdle) { stopIdle(); stopIdle = null; }
+}
+
 // reason === 'logout': хэрэглэгч өөрөө гарсан тул нэвтрэх хуудас руу буцах хаяг (next) нэмэхгүй.
 async function render(reason = null) {
   document.getElementById('boot')?.remove();
+  syncIdle();
   const path = pathOf();
   if (!isSignedIn()) {
     unmountApp();

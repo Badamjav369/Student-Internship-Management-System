@@ -7,7 +7,9 @@ import { now } from './db.js';
 const ITERATIONS = 100000;
 export const iterationsOf = (env) => Math.min(100000, Math.max(10000, Number(env?.PASSWORD_ITERATIONS) || ITERATIONS));
 export const iterationsIn = (stored) => Number(String(stored ?? '').split('$')[1]) || 0;
-const SESSION_DAYS = 7;
+// Session 5 минут идэвхгүй бол дуусна (хүсэлт бүрт сунгана; хөтөч ч мөн 5 минут идэвхгүй бол өөрөө гарна — src/js/core/idle.js).
+export const IDLE_MINUTES = 5;
+const COOKIE_DAYS = 7;
 const COOKIE = 'sid';
 const enc = new TextEncoder();
 const b64 = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes)));
@@ -44,9 +46,9 @@ export async function rolesOf(db, userId) {
 /** Шинэ session: cookie тавьсан хариу. */
 export async function startSession(db, request, user, role, data) {
   const token = randomToken();
-  const expires = new Date(Date.now() + SESSION_DAYS * 864e5).toISOString();
+  const expires = new Date(Date.now() + IDLE_MINUTES * 60e3).toISOString();
   await db.run('INSERT INTO sessions (token_hash, user_id, role, expires_at) VALUES (?, ?, ?, ?)', await sha256(token), user.id, role, expires);
-  return json(data, 200, { 'set-cookie': cookie(request, token, SESSION_DAYS * 86400) });
+  return json(data, 200, { 'set-cookie': cookie(request, token, COOKIE_DAYS * 86400) });
 }
 export async function endSession(db, request) {
   const token = cookieOf(request);
@@ -61,6 +63,10 @@ export async function currentUser(db, request) {
   const row = await db.one(`SELECT s.role AS active_role, s.expires_at, u.* FROM sessions s JOIN users u ON u.id = s.user_id
     WHERE s.token_hash = ?`, await sha256(token));
   if (!row || row.expires_at < now() || row.status === 'disabled') return null;
+  // Идэвхтэй хэрэглэгчийн session-ийг сунгана; бичилтийг минутад нэгээс олонгүй хийнэ.
+  if (row.expires_at < new Date(Date.now() + (IDLE_MINUTES - 1) * 60e3).toISOString()) {
+    await db.run('UPDATE sessions SET expires_at = ? WHERE token_hash = ?', new Date(Date.now() + IDLE_MINUTES * 60e3).toISOString(), await sha256(token));
+  }
   const { password_hash, failed_logins, locked_until, expires_at, ...user } = row;
   return user;
 }

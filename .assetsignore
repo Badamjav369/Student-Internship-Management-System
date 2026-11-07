@@ -17,3 +17,4 @@ package-lock.json
 .gitignore
 .dev.vars
 .dev.vars.example
+.github

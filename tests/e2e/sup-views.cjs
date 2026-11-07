@@ -22,7 +22,7 @@ const widths = (process.argv[2] || '1280,390').split(',').map(Number);
 const themes = (process.argv[3] || 'light,dark').split(',');
 const shoot = process.argv[4] === 'shots';
 (async () => {
-  const b = await chromium.launch(); let total = 0;
+  const b = await chromium.launch({ headless: !process.env.HEADED, slowMo: process.env.HEADED ? 300 : 0 }); let total = 0;
   for (const w of widths) for (const theme of themes) {
     const ctx = await b.newContext({ viewport: { width: w, height: 800 } });
     await ctx.addInitScript((t) => { try { localStorage.setItem('pm2.consent', '2026-10-01T09:00:00.000Z'); localStorage.setItem('pm2.session', 'in'); localStorage.setItem('pm2.role', 'supervisor'); localStorage.setItem('pm2.theme', t); } catch (e) {} }, theme);

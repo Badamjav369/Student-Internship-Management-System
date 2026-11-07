@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 const base = 'http://localhost:5174/#';
 (async () => {
-  const b = await chromium.launch();
+  const b = await chromium.launch({ headless: !process.env.HEADED, slowMo: process.env.HEADED ? 300 : 0 });
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
   await ctx.addInitScript(() => { try { if (!sessionStorage.getItem('seeded')) { localStorage.clear(); sessionStorage.setItem('seeded', '1'); } localStorage.setItem('pm2.consent', '2026-10-01T09:00:00.000Z'); localStorage.setItem('pm2.session', 'in'); localStorage.setItem('pm2.role', 'admin'); } catch (e) {} });
   await ctx.request.post('http://localhost:5174/api/auth/login', { data: { email: 'admin@gmail.com', password: 'q123456' }, headers: { 'x-requested-with': 'pm2' } });

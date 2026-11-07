@@ -17,7 +17,7 @@ const probe = () => {
 const PAGES = ['/student/home','/student/postings','/student/postings?tab=mine','/student/postings?tab=own','/student/postings/1','/student/contract','/student/plan','/student/logbook','/student/report','/student/defense','/student/score','/student/guide','/student/notifications','/student/profile'];
 const USERS = ['student1','student11','student9','student8','student5','student6','student4','student2','student3','student13','student15','student12','student14'];
 (async () => {
-  const b = await chromium.launch(); let total = 0;
+  const b = await chromium.launch({ headless: !process.env.HEADED, slowMo: process.env.HEADED ? 300 : 0 }); let total = 0;
   for (const [w, theme] of [[1280, 'light'], [390, 'dark']]) for (const u of USERS) {
     const ctx = await b.newContext({ viewport: { width: w, height: 800 } });
     await ctx.request.post('http://localhost:5174/api/auth/login', { data: { email: `${u}@gmail.com`, password: 'q123456' }, headers: { 'x-requested-with': 'pm2' } });

@@ -17,13 +17,13 @@ const SCAN = __dirname + '/scan.pdf';
     await page.goto(`${B}/#/login`, { waitUntil: 'load' }); await page.waitForTimeout(400);
     await page.evaluate(async () => { await fetch('/api/auth/logout', { method: 'POST', headers: { 'x-requested-with': 'pm2' } }); localStorage.clear(); });
     await page.goto(`${B}/#/login`, { waitUntil: 'load' }); await page.waitForTimeout(700);
-    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'Demo1234'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
+    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'q123456'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
   };
   const api = (path, method = 'GET', body) => page.evaluate(async ([p, m, b2]) => { const r = await fetch(p, { method: m, headers: { 'x-requested-with': 'pm2', 'content-type': 'application/json' }, body: b2 ? JSON.stringify(b2) : undefined }); const t = await r.text(); return [r.status, t ? JSON.parse(t) : null]; }, [path, method, body]);
   const fill = async (vals) => { for (const [k, v] of Object.entries(vals)) await page.fill(`.main input[name=score-${k}]`, String(v)); };
 
   // ===== Тэнхмийн эрхлэгч =====
-  await as('head@university.example');
+  await as('head@gmail.com');
   ok(/#\/head\/home/.test(await hash()), 'head login → /head/home');
   let t = await txt();
   ok(/Хийх ажил/.test(t) && /О\. Цэцэг: гуравласан гэрээний скан/.test(t) && /П\. Тэнгис/.test(t) && /С\. Ану/.test(t), 'head home: 3 todos (contract + 2 requests)');
@@ -53,7 +53,7 @@ const SCAN = __dirname + '/scan.pdf';
   ok((await api('/api/head/contracts/9/approve', 'POST'))[0] === 409, 'approve after return → 409');
   await go('/head/home'); ok(!/О\. Цэцэг/.test(await txt()), 'home: contract todo gone after return');
   // оюутан мэдэгдэл авч, дахин байршуулна
-  await as('tsetseg@university.example');
+  await as('student9@gmail.com');
   await go('/student/notifications'); ok(/Гэрээ буцаагдлаа: Байгууллагын тамга дутуу/.test(await txt()), 'student notified of return');
   await go('/student/home'); ok(/Гэрээ буцсан/.test(await txt()), 'student home: fix_contract todo');
   await go('/student/contract'); t = await txt();
@@ -63,7 +63,7 @@ const SCAN = __dirname + '/scan.pdf';
   await go('/student/home'); ok(/Гэрээ баталгаажихыг хүлээж байна/.test(await txt()), 'student home: wait_contract');
   ok((await api('/api/student/dashboard'))[1].internship.status === 'contracting', 'upload does not advance stage');
   // эрхлэгч эцэслэн баталгаажуулна
-  await as('head@university.example');
+  await as('head@gmail.com');
   await go('/head/home'); ok(/О\. Цэцэг: гуравласан гэрээний скан/.test(await txt()), 'home: contract todo back');
   await go('/head/contracts/9');
   await page.click('button:has-text("Баталгаажуулах")'); await page.waitForTimeout(300);
@@ -71,10 +71,10 @@ const SCAN = __dirname + '/scan.pdf';
   await confirm('Баталгаажуулах'); t = await txt();
   ok(/нд баталгаажсан/.test(t) && !(await page.locator('textarea[name=reason]').count()), 'contract 9 approved');
   ok((await api('/api/head/contracts/9'))[1].contract.approved_at != null, 'approved_at set');
-  await as('tsetseg@university.example');
+  await as('student9@gmail.com');
   ok((await api('/api/student/dashboard'))[1].internship.status === 'planning', 'student → planning after head approval');
   await go('/student/notifications'); ok(/Гэрээ баталгаажлаа/.test(await txt()), 'student notified of approval');
-  await as('head@university.example');
+  await as('head@gmail.com');
   // газрын хүсэлт
   await go('/head/requests'); t = await txt();
   ok(/2 хүсэлт/.test(t) && /Rakuten Technology, Япон/.test(t), 'requests: pending = 2');
@@ -102,12 +102,12 @@ const SCAN = __dirname + '/scan.pdf';
   await page.locator('[role=tab]', { hasText: 'Статистик' }).click().catch(() => {}); await page.waitForTimeout(600);
   ok(/Нийт оюутан/.test(await txt()), 'summary: stats');
   ok((await api('/api/admin/users'))[0] === 403, 'head cannot use admin users API');
-  await as('admin@university.example');
+  await as('admin@gmail.com');
   await go('/admin/notifications');
   ok(/Пүрэвдорж Тэнгис-ийн санал болгосон газрыг эрхлэгч зөвшөөрлөө/.test(await txt()), 'admin notified');
 
   // ===== Комиссын гишүүн (Баярсайхан: удирдагч + комисс) =====
-  await as('bayarsaikhan@university.example');
+  await as('supervisor1@gmail.com');
   ok(/#\/supervisor\/home/.test(await hash()), 'multi-role login → supervisor');
   await page.locator('user-menu .user-button').click(); await page.waitForTimeout(300);
   await page.locator('user-menu .menu-item', { hasText: 'Комиссын гишүүн' }).click(); await page.waitForTimeout(1800);

@@ -15,12 +15,12 @@ const B = 'http://localhost:5174';
     await page.goto(`${B}/#/login`, { waitUntil: 'load' }); await page.waitForTimeout(400);
     await page.evaluate(async () => { await fetch('/api/auth/logout', { method: 'POST', headers: { 'x-requested-with': 'pm2' } }); localStorage.clear(); });
     await page.goto(`${B}/#/login`, { waitUntil: 'load' }); await page.waitForTimeout(700);
-    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'Demo1234'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
+    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'q123456'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
   };
   const api = (path, method = 'GET', body) => page.evaluate(async ([p, m, b2]) => { const r = await fetch(p, { method: m, headers: { 'x-requested-with': 'pm2', 'content-type': 'application/json' }, body: b2 ? JSON.stringify(b2) : undefined }); const t = await r.text(); return [r.status, t ? JSON.parse(t) : null]; }, [path, method, body]);
 
   // ===== Дадлага удирдагч =====
-  await as('ganbaatar@narlag.example');
+  await as('mentor1@gmail.com');
   ok(page.url().includes('/mentor/home') && /Хийх ажил/.test(await txt()), 'mentor home');
   await go('/mentor/students'); ok(/5 оюутан/.test(await txt()) || (await page.locator('.row-card').count()) === 5, 'mentor: 5 interns');
   ok((await api('/api/mentor/internships/2'))[0] === 404, 'mentor cannot see other org intern');
@@ -58,7 +58,7 @@ const B = 'http://localhost:5174';
   ok((await page.evaluate(async (id) => (await fetch(`/api/files/${id}`)).status, sc.org_letter_file_id)) === 200, 'mentor downloads own letter');
 
   // ===== Байгууллагын төлөөлөгч =====
-  await as('zoljargal@narlag.example');
+  await as('org1@gmail.com');
   ok(page.url().includes('/org_rep/home'), 'org rep home');
   let ps = (await api('/api/org/postings'))[1];
   ok(ps.length === 3 && ps.every((p) => p.organization_id === 1), 'org: own 3 postings');
@@ -97,7 +97,7 @@ const B = 'http://localhost:5174';
   ok((await api('/api/org/interns/1/mentor', 'POST', { mentor_id: cand[0].id }))[0] === 409, 'cannot change mentor after start');
 
   // ===== Оюутан Ану: шинэ гэрээ (filled) → скан =====
-  await as('anu@university.example');
+  await as('student11@gmail.com');
   await go('/student/contract'); t = await txt();
   ok(/Гэрээ байгуулах хэлбэр/.test(t), 'anu contract filled → mode picker');
   await page.locator('.main label.kind-card', { hasText: 'Цаасан' }).click(); await page.locator('.main button', { hasText: 'Үргэлжлүүлэх' }).click(); await page.waitForTimeout(1000); t = await txt();
@@ -112,7 +112,7 @@ const B = 'http://localhost:5174';
   const ac2 = (await api('/api/student/contract'))[1];
   ok(ac2.status === 'scanned' && ac2.scan_name === 'gereenii_scan.pdf' && ac2.scan_file_id && !ac2.can_upload, 'scan file exists after upload');
   ok((await api('/api/student/dashboard'))[1].internship.status === 'contracting', 'upload does not advance stage (head approves)');
-  await as('head@university.example');
+  await as('head@gmail.com');
   ok((await api('/api/head/contracts'))[1].some((c) => c.student.last_name && c.contract.scan_name === 'gereenii_scan.pdf'), 'head sees Ану scan');
   await go('/head/notifications'); ok(/гэрээний скан байршууллаа/.test(await txt()), 'head notified of upload');
   console.log('errs', JSON.stringify(errs)); console.log(fails ? `FAILS ${fails}` : 'ALL OK');

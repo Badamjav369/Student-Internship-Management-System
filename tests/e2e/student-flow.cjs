@@ -14,12 +14,12 @@ const B = 'http://localhost:5174';
     await page.goto(`${B}/#/login`, { waitUntil: 'load' }); await page.waitForTimeout(500);
     await page.evaluate(async (e) => { await fetch('/api/auth/logout', { method: 'POST', headers: { 'x-requested-with': 'pm2' } }); localStorage.clear(); }, email);
     await page.goto(`${B}/#/login`, { waitUntil: 'load' }); await page.waitForTimeout(700);
-    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'Demo1234'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
+    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'q123456'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
   };
   const api = (path, opts = {}) => page.evaluate(async ([p, o]) => { const r = await fetch(p, { ...o, headers: { 'x-requested-with': 'pm2', 'content-type': 'application/json' } }); return [r.status, await r.text()]; }, [path, opts]);
 
   // --- Тэмүүлэн: дадлага хийж байна ---
-  await as('temuulen.b@university.example');
+  await as('student1@gmail.com');
   let t = await txt();
   ok(page.url().includes('/student/home') && /Дадлага хийж байна|Өнөөдрийн тэмдэглэл|Хийх ажил/.test(t), 'temuulen home');
   await go('/student/logbook');
@@ -54,12 +54,12 @@ const B = 'http://localhost:5174';
   ok(forbidden[0] === 403, 'student cannot call admin api');
 
   // --- Ану: газар хайж байна (хүсэлт, өргөдөл). Бүртгэлийн хугацаа өнгөрсөн тул эхлээд хаалттай эсэх, дараа нь админ сунгана ---
-  await as('anu@university.example');
+  await as('student11@gmail.com');
   const closed = await page.evaluate(async () => { const fd = new FormData(); fd.append('cv', new File(['%PDF'], 'a.pdf')); const r = await fetch('/api/student/postings/8/apply', { method: 'POST', headers: { 'x-requested-with': 'pm2' }, body: fd }); return r.status; });
   ok(closed === 409, 'apply blocked outside registration window');
-  await as('admin@university.example');
+  await as('admin@gmail.com');
   ok((await api('/api/admin/semesters/2', { method: 'PATCH', body: JSON.stringify({ register_to: '2026-12-31' }) }))[0] === 204, 'admin extends registration');
-  await as('anu@university.example');
+  await as('student11@gmail.com');
   await go('/student/postings');
   t = await txt(); ok(/Веб хөгжүүлэгч дадлагжигч/.test(t), 'postings list');
   await go('/student/postings?tab=own'); t = await txt();
@@ -94,7 +94,7 @@ const B = 'http://localhost:5174';
   } else ok(false, 'proposal form not found');
 
   // --- Цэцэг: гэрээ (скан байршуулсан, эрхлэгчийн баталгааг хүлээж буй) ---
-  await as('tsetseg@university.example');
+  await as('student9@gmail.com');
   await go('/student/contract'); t = await txt();
   ok(/Байршуулсан/.test(t) && !/Скан байршуулах/.test(t) && !/Гарын үсэг/.test(t), 'tsetseg contract: scanned, no upload form');
   const j = async (p) => JSON.parse((await api(p))[1]);
@@ -108,11 +108,11 @@ const B = 'http://localhost:5174';
   ok((await page.evaluate(async (id) => (await fetch('/api/files/' + id)).status, c0.scan_file_id)) === 200, 'student downloads own scan');
 
   // --- Мөнхжаргал: тайлан засвар (админ хугацаа сунгаад) ---
-  await as('admin@university.example');
+  await as('admin@gmail.com');
   const ext = await page.evaluate(async () => { const fd = new FormData(); fd.append('kind', 'extend'); fd.append('reason', 'Засвар хийх хугацаа'); fd.append('details', JSON.stringify({ report_due: '2026-12-20' }));
     const r = await fetch('/api/admin/internships/5/changes', { method: 'POST', headers: { 'x-requested-with': 'pm2' }, body: fd }); return r.status; });
   ok(ext === 200, 'admin extends report deadline');
-  await as('munkhjargal@university.example');
+  await as('student5@gmail.com');
   await go('/student/report'); t = await txt();
   ok(/Засвар шаардсан|засвар/i.test(t), 'revision report visible');
   let rep = JSON.parse((await api('/api/student/report'))[1]);
@@ -128,15 +128,15 @@ const B = 'http://localhost:5174';
   ok(rep.status === 'submitted' && rep.submission.files.some((f) => f.name === 'tailan_v2.pdf'), 'report submitted via UI');
 
   // --- Золбоо: хамгаалалтын хуваарь; Эрдэнэ: дүн; Номин: W ---
-  await as('zolboo@university.example');
+  await as('student4@gmail.com');
   await go('/student/defense'); t = await txt();
   ok(/13:00/.test(t) && /Бат-Эрдэнэ Сувд/.test(t), 'zolboo defense schedule'); if (!/13:00/.test(t)) console.log(t.slice(0, 400));
-  await as('erdene@university.example');
+  await as('student3@gmail.com');
   await go('/student/score'); t = await txt();
   ok(/84/.test(t) && /Дууссан|Баталгаажсан/.test(t), 'erdene final score 84');
   const ev = JSON.parse((await api('/api/student/evaluation'))[1]);
   ok(ev.final && ev.final.criteria.length === 8 && Math.abs(ev.final.org_score + ev.final.committee_score - 84) < 0.6, `erdene breakdown ${ev.final?.org_score}+${ev.final?.committee_score}`);
-  await as('nomin@university.example');
+  await as('student13@gmail.com');
   await go('/student/score'); ok(/W/.test(await txt()), 'nomin mark W');
   console.log('errs', JSON.stringify(errs)); console.log(fails ? `FAILS ${fails}` : 'ALL OK');
   await b.close();

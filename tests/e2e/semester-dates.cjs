@@ -2,7 +2,7 @@
 const { request } = require('playwright');
 (async () => {
   const api = await request.newContext({ baseURL: 'http://localhost:5174', extraHTTPHeaders: { 'x-requested-with': 'pm2' } });
-  const r = (await api.post('/api/auth/login', { data: { email: 'admin@university.example', password: 'Demo1234' } }));
+  const r = (await api.post('/api/auth/login', { data: { email: 'admin@gmail.com', password: 'q123456' } }));
   let fail = 0; const t = (n, ok, extra = '') => { console.log(ok ? 'OK  ' : 'FAIL', n, extra); if (!ok) fail++; };
   t('login', r.ok(), r.status());
   const c = await api.post('/api/admin/semesters', { data: { academic_year: '2031-2032', season: 'winter' } });

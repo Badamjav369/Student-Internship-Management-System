@@ -33,7 +33,7 @@ await migrate(DB, join(root, 'migrations'));
 if (fresh) {
   const { seedSql } = await import('./scripts/seed.mjs');
   DB.raw.exec(await seedSql());
-  console.log('Демо өгөгдөл орлоо. Нууц үг бүгдэд: Demo1234 (admin@university.example гэх мэт).');
+  console.log('Демо өгөгдөл орлоо. Нууц үг бүгдэд: q123456 (admin@gmail.com гэх мэт).');
 }
 // MAIL_*, TURNSTILE_*, RATE_LIMIT, PASSWORD_ITERATIONS, SIGNING_SECRET орчны хувьсагчаар өгвөл локалд ч жинхэнэ (эсвэл туршилтын) имэйл үйлчилгээ рүү явна; үгүй бол консолд.
 // FILES_DRIVER=d1 — файлыг R2-ийн оронд D1-д хадгална (Cloudflare дээр R2-гүй үеийн замыг туршихад).

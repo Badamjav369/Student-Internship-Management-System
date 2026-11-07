@@ -13,7 +13,7 @@ const ok = (c, m) => { if (!c) { fails++; console.log('FAIL', m); } else console
   const as = async (email) => {
     await page.evaluate(async () => { await fetch('/api/auth/logout', { method: 'POST', headers: { 'x-requested-with': 'pm2' } }); localStorage.clear(); });
     await page.goto('http://localhost:5174/#/login', { waitUntil: 'load' }); await page.waitForTimeout(800);
-    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'Demo1234'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
+    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'q123456'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
   };
   const txt = () => page.evaluate(() => document.querySelector('.main')?.innerText ?? '');
   const confirm = async (name) => { await page.locator('dialog.confirm button', { hasText: name }).click(); await page.waitForTimeout(500); };
@@ -23,8 +23,8 @@ const ok = (c, m) => { if (!c) { fails++; console.log('FAIL', m); } else console
   await page.evaluate(() => localStorage.clear());
   await page.goto('http://localhost:5174/#/login', { waitUntil: 'load' });
   await page.waitForTimeout(800);
-  await page.fill('input[name=email]', 'bayarsaikhan@university.example');
-  await page.fill('input[name=password]', 'Demo1234');
+  await page.fill('input[name=email]', 'supervisor1@gmail.com');
+  await page.fill('input[name=password]', 'q123456');
   await page.click('button[type=submit]');
   await page.waitForTimeout(1500);
   if (await page.locator('input[name=consent], input[type=checkbox]').count()) { await page.check('input[type=checkbox]'); await page.click('button[type=submit]'); await page.waitForTimeout(600); }
@@ -59,7 +59,7 @@ const ok = (c, m) => { if (!c) { fails++; console.log('FAIL', m); } else console
   await go('/supervisor/home');
   ok(!/Э\. Уянга: тайлан хянах/.test(await txt()), 'home todo: report item gone');
   // reset, accept
-  execSync('node tests/server.mjs restart'); await as('bayarsaikhan@university.example');
+  execSync('node tests/server.mjs restart'); await as('supervisor1@gmail.com');
   await go('/supervisor/reports/6');
   await page.locator('.main button', { hasText: 'Хүлээн авах' }).click(); await confirm('Хүлээн авах');
   t = await txt();
@@ -115,10 +115,10 @@ const ok = (c, m) => { if (!c) { fails++; console.log('FAIL', m); } else console
   await page.locator('.main button[type=submit]', { hasText: 'Нийтлэх' }).click(); await page.waitForTimeout(600);
   ok((await page.locator('article.announcement').count()) === before + 1, 'announce: published');
   // student sees it
-  await as('temuulen.b@university.example'); await go('/student/guide');
+  await as('student1@gmail.com'); await go('/student/guide');
   ok(/Шинэ сануулга/.test(await txt()), 'student guide shows supervisor announcement');
   ok(/Шинэ зарлал: Шинэ сануулга/.test(await page.evaluate(async () => JSON.stringify(await (await fetch('/api/notifications')).json()))), 'student notified of announcement');
-  await as('bayarsaikhan@university.example'); await go('/supervisor/announcements');
+  await as('supervisor1@gmail.com'); await go('/supervisor/announcements');
   await page.locator('article.announcement', { hasText: 'Шинэ сануулга' }).locator('button', { hasText: 'Устгах' }).click(); await confirm('Устгах');
   ok((await page.locator('article.announcement').count()) === before, 'announce: deleted');
 
@@ -136,10 +136,10 @@ const ok = (c, m) => { if (!c) { fails++; console.log('FAIL', m); } else console
   // --- role guard: student path while supervisor
   await go('/student/home'); await page.waitForTimeout(300);
   ok(/#\/supervisor\/home/.test(await page.evaluate(() => location.hash)), 'role guard redirects');
-  await as('admin@university.example'); await go('/admin/reports?status=accepted');
+  await as('admin@gmail.com'); await go('/admin/reports?status=accepted');
   ok(/Энхбаяр|Уянга/.test(await txt()), 'admin sees report accepted by supervisor (shared data)');
   const other = await page.evaluate(async () => { await fetch('/api/auth/logout', { method: 'POST', headers: { 'x-requested-with': 'pm2' } });
-    await fetch('/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json', 'x-requested-with': 'pm2' }, body: JSON.stringify({ email: 'oyun@university.example', password: 'Demo1234' }) });
+    await fetch('/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json', 'x-requested-with': 'pm2' }, body: JSON.stringify({ email: 'supervisor2@gmail.com', password: 'q123456' }) });
     return [(await fetch('/api/supervisor/internships/6')).status, (await fetch('/api/supervisor/internships')).status]; });
   ok(other[0] === 404 && other[1] === 200, 'other supervisor cannot see my student');
   console.log('errors:', errs.length ? errs.join('\n') : 'none');

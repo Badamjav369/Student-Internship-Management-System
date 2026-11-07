@@ -16,12 +16,12 @@ const B = 'http://localhost:5174';
     await page.goto(`${B}/#/login`, { waitUntil: 'load' }); await page.waitForTimeout(400);
     await page.evaluate(async () => { await fetch('/api/auth/logout', { method: 'POST', headers: { 'x-requested-with': 'pm2' } }); localStorage.clear(); });
     await page.goto(`${B}/#/login`, { waitUntil: 'load' }); await page.waitForTimeout(700);
-    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'Demo1234'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
+    await page.fill('input[name=email]', email); await page.fill('input[name=password]', 'q123456'); await page.click('button[type=submit]'); await page.waitForTimeout(1500);
   };
-  await as('head@university.example');
+  await as('head@gmail.com');
   const rr = await page.evaluate(async () => (await fetch('/api/head/contracts/9/return', { method: 'POST', headers: { 'x-requested-with': 'pm2', 'content-type': 'application/json' }, body: JSON.stringify({ reason: 'Дахин' }) })).status);
   ok(rr === 204 || rr === 200, 'head returns contract');
-  await as('tsetseg@university.example');
+  await as('student9@gmail.com');
   await go('/student/contract');
   await page.locator('.main label.kind-card', { hasText: 'Цаасан' }).click(); await page.locator('.main button', { hasText: 'Үргэлжлүүлэх' }).click(); await page.waitForTimeout(1000);
   // PDF биш файл татгалзагдана
@@ -87,20 +87,20 @@ const B = 'http://localhost:5174';
   await page.keyboard.press('Escape'); await page.waitForTimeout(300);
   ok(await page.locator('dialog.viewer').count() === 0, 'Esc closes viewer');
   // эрхлэгч харж чадна
-  await as('head@university.example'); await go('/head/contracts/9'); 
+  await as('head@gmail.com'); await go('/head/contracts/9'); 
   await page.locator('.doc-tile button', { hasText: 'Үзэх' }).first().click(); await page.waitForTimeout(2500);
   ok(await page.locator('.viewer-canvas').count() >= 1, 'head views scan');
   await page.keyboard.press('Escape');
   // эрхгүй хүн
-  await as('zoljargal@narlag.example');
+  await as('org1@gmail.com');
   const st = await page.evaluate(async () => (await fetch('/api/files/37')).status);
   ok(st === 404, 'org_rep cannot read other student file');
   // профайл
-  await as('head@university.example'); await go('/head/profile'); const t = await txt();
+  await as('head@gmail.com'); await go('/head/profile'); const t = await txt();
   ok(!/Оюутны код|Хөтөлбөр/.test(t) && /Тэнхмийн эрхлэгч/.test(t), 'head profile: no student fields');
-  await as('ganbaatar@narlag.example'); await go('/mentor/profile'); const t2 = await txt();
+  await as('mentor1@gmail.com'); await go('/mentor/profile'); const t2 = await txt();
   ok(/Байгууллага/.test(t2) && /Нарлаг/.test(t2) && !/Оюутны код/.test(t2), 'mentor profile: organization, no student fields');
-  await as('temuulen.b@university.example'); await go('/student/profile');
+  await as('student1@gmail.com'); await go('/student/profile');
   ok(/Оюутны код/.test(await txt()), 'student profile: student code');
   await b.close();
   console.log('errs', JSON.stringify(errs)); console.log(fails ? `FAILS ${fails}` : 'ALL OK');

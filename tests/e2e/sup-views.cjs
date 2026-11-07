@@ -26,7 +26,7 @@ const shoot = process.argv[4] === 'shots';
   for (const w of widths) for (const theme of themes) {
     const ctx = await b.newContext({ viewport: { width: w, height: 800 } });
     await ctx.addInitScript((t) => { try { localStorage.setItem('pm2.consent', '2026-10-01T09:00:00.000Z'); localStorage.setItem('pm2.session', 'in'); localStorage.setItem('pm2.role', 'supervisor'); localStorage.setItem('pm2.theme', t); } catch (e) {} }, theme);
-    await ctx.request.post('http://localhost:5174/api/auth/login', { data: { email: 'bayarsaikhan@university.example', password: 'Demo1234' }, headers: { 'x-requested-with': 'pm2' } });
+    await ctx.request.post('http://localhost:5174/api/auth/login', { data: { email: 'supervisor1@gmail.com', password: 'q123456' }, headers: { 'x-requested-with': 'pm2' } });
     const page = await ctx.newPage(); const errs = [];
     page.on('pageerror', (e) => errs.push('pageerror ' + e.message));
     page.on('console', (m) => { if (m.type() === 'error' && !/ERR_TUNNEL|fonts|net::/.test(m.text())) errs.push('console ' + m.text()); });

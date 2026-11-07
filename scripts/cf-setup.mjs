@@ -117,9 +117,9 @@ if (users > 0) say(`  ✓ Өгөгдөлтэй (${users} хэрэглэгч) —
 else {
   process.env.PASSWORD_ITERATIONS = String(iterations);
   const { adminSql, seedSql } = await import('./seed.mjs');
-  const demo = await yes('Демо өгөгдөл оруулах уу? (туршилтад: бүх дүрийн жишээ хэрэглэгч, нууц үг Demo1234). Үгүй бол зөвхөн админ үүснэ', true);
+  const demo = await yes('Демо өгөгдөл оруулах уу? (туршилтад: бүх дүрийн жишээ хэрэглэгч, нууц үг q123456). Үгүй бол зөвхөн админ үүснэ', true);
   let sql;
-  if (demo) { sql = await seedSql(iterations); accounts = 'Демо хэрэглэгчид: admin@university.example, head@…, tsetseg@…, ganbaatar@narlag.example гэх мэт — нууц үг Demo1234 (README §2)'; }
+  if (demo) { sql = await seedSql(iterations); accounts = 'Демо хэрэглэгчид: admin@gmail.com, head@…, student1@…, supervisor1@…, mentor1@gmail.com, org1@gmail.com гэх мэт — нууц үг q123456 (README §2)'; }
   else {
     const email = await ask('Админы и-мэйл');
     let password = '';

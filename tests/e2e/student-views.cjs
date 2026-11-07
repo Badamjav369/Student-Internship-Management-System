@@ -15,12 +15,12 @@ const probe = () => {
 };
 
 const PAGES = ['/student/home','/student/postings','/student/postings?tab=mine','/student/postings?tab=own','/student/postings/1','/student/contract','/student/plan','/student/logbook','/student/report','/student/defense','/student/score','/student/guide','/student/notifications','/student/profile'];
-const USERS = ['temuulen.b','anu','tsetseg','saruul','munkhjargal','uyanga','zolboo','hulan','erdene','nomin','anujin','dulguun','temuujin'];
+const USERS = ['student1','student11','student9','student8','student5','student6','student4','student2','student3','student13','student15','student12','student14'];
 (async () => {
   const b = await chromium.launch(); let total = 0;
   for (const [w, theme] of [[1280, 'light'], [390, 'dark']]) for (const u of USERS) {
     const ctx = await b.newContext({ viewport: { width: w, height: 800 } });
-    await ctx.request.post('http://localhost:5174/api/auth/login', { data: { email: `${u}@university.example`, password: 'Demo1234' }, headers: { 'x-requested-with': 'pm2' } });
+    await ctx.request.post('http://localhost:5174/api/auth/login', { data: { email: `${u}@gmail.com`, password: 'q123456' }, headers: { 'x-requested-with': 'pm2' } });
     await ctx.addInitScript((t) => { localStorage.setItem('pm2.session', 'in'); localStorage.setItem('pm2.role', 'student'); localStorage.setItem('pm2.consent', 'x'); localStorage.setItem('pm2.theme', t); }, theme);
     const page = await ctx.newPage(); const errs = [];
     page.on('pageerror', (e) => errs.push('pageerror ' + e.message));

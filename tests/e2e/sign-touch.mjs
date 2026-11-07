@@ -3,12 +3,12 @@ class C { jar = {};
   async send(method, path, json) { const headers = { 'x-requested-with': 'pm2', cookie: Object.entries(this.jar).map(([k, v]) => `${k}=${v}`).join('; ') }; let body; if (json !== undefined) { headers['content-type'] = 'application/json'; body = JSON.stringify(json); }
     const res = await fetch(base + path, { method, headers, body }); for (const c of res.headers.getSetCookie()) { const [kv] = c.split(';'); const [k, ...v] = kv.split('='); this.jar[k] = v.join('='); }
     const t = await res.text(); let d = null; try { d = t ? JSON.parse(t) : null; } catch { d = t; } return { s: res.status, d, h: res.headers }; }
-  async login(e) { const r = await this.send('POST', '/api/auth/login', { email: e, password: 'Demo1234' }); if (r.s !== 200) throw new Error('login ' + e + r.s); await this.send('POST', '/api/me/consent', {}); } }
+  async login(e) { const r = await this.send('POST', '/api/auth/login', { email: e, password: 'q123456' }); if (r.s !== 200) throw new Error('login ' + e + r.s); await this.send('POST', '/api/me/consent', {}); } }
 let bad = 0; const ok = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) bad++; };
 // 1x1 PNG
 const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 const st = new C(), head = new C(), men = new C();
-await st.login('tsetseg@university.example'); await head.login('head@university.example'); await men.login('ganbaatar@narlag.example');
+await st.login('student9@gmail.com'); await head.login('head@gmail.com'); await men.login('mentor1@gmail.com');
 let r = await st.send('GET', '/api/student/contract'); ok(r.d.status === 'scanned', 'start: tsetseg scanned (paper-like) ' + r.d.status);
 // tsetseg already scanned → use head return to reopen
 r = await head.send('POST', '/api/head/contracts/9/return', { reason: 'онлайн горимд шилжүүлнэ' }); ok(r.s === 204, 'head return ' + r.s);
@@ -43,6 +43,6 @@ import { DatabaseSync } from 'node:sqlite';
 const db = new DatabaseSync('.data/local.sqlite'); db.prepare("UPDATE contract_signatures SET signed_at='2020-01-01T00:00:00Z' WHERE party='mentor' AND internship_id=9").run();
 r = await st.send('GET', '/api/student/contract/verify'); ok(!r.d.valid && r.d.signatures.some((x) => !x.proof_ok), 'tamper detected');
 // outsider cannot read
-const other = new C(); await other.login('anu@university.example'); r = await other.send('GET', '/api/student/contract/document'); ok(r.s !== 200 || !/Tsetseg|Цэцэг/.test(String(r.d)), 'other student gets own contract only');
+const other = new C(); await other.login('student11@gmail.com'); r = await other.send('GET', '/api/student/contract/document'); ok(r.s !== 200 || !/Tsetseg|Цэцэг/.test(String(r.d)), 'other student gets own contract only');
 r = await other.send('GET', '/api/mentor/contracts'); ok(r.s === 403, 'student blocked from mentor routes ' + r.s);
 console.log(bad ? bad + ' FAILS' : 'ALL OK'); process.exit(bad ? 1 : 0);

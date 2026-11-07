@@ -4,7 +4,7 @@ const base = 'http://localhost:5174/#';
   const b = await chromium.launch();
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
   await ctx.addInitScript(() => { try { if (!sessionStorage.getItem('seeded')) { localStorage.clear(); sessionStorage.setItem('seeded', '1'); } localStorage.setItem('pm2.consent', '2026-10-01T09:00:00.000Z'); localStorage.setItem('pm2.session', 'in'); localStorage.setItem('pm2.role', 'admin'); } catch (e) {} });
-  await ctx.request.post('http://localhost:5174/api/auth/login', { data: { email: 'admin@university.example', password: 'Demo1234' }, headers: { 'x-requested-with': 'pm2' } });
+  await ctx.request.post('http://localhost:5174/api/auth/login', { data: { email: 'admin@gmail.com', password: 'q123456' }, headers: { 'x-requested-with': 'pm2' } });
   const page = await ctx.newPage(); const errs = [];
   let cur=''; page.on('pageerror', (e) => errs.push('pageerror [' + cur + '] ' + e.message + ' ' + (e.stack||'').split('\n').slice(1,4).join('|')));
   page.on('console', (m) => { if (m.type() === 'error' && !/ERR_TUNNEL|fonts|net::/.test(m.text())) errs.push('console ' + m.text()); });

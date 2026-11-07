@@ -29,7 +29,7 @@ const B = 'http://localhost:5174';
   ok(/регистрийн дугаартай байгууллага бүртгэлтэй/.test(await txt()), 'duplicate register_no error shown on field');
   const api = (p, m = 'GET', body) => page.evaluate(async ([p, m, b2]) => { const r = await fetch(p, { method: m, headers: { 'x-requested-with': 'pm2', 'content-type': 'application/json' }, body: b2 ? JSON.stringify(b2) : undefined }); const t = await r.text(); return [r.status, t ? JSON.parse(t) : null]; }, [p, m, body]);
   // бүртгэлтэй и-мэйл → ижил хариу, шинэ байгууллага үүсэхгүй
-  const dup = await api('/api/auth/register-org', 'POST', { name: 'X ХХК', register_no: 'ABCDE99', representative: { last_name: 'A', first_name: 'B', email: 'admin@university.example' } });
+  const dup = await api('/api/auth/register-org', 'POST', { name: 'X ХХК', register_no: 'ABCDE99', representative: { last_name: 'A', first_name: 'B', email: 'admin@gmail.com' } });
   ok(dup[0] === 200, 'existing email → same 200 reply');
   const bad = await api('/api/auth/register-org', 'POST', { name: '', register_no: '1', representative: {} });
   ok(bad[0] === 422 && bad[1].fields.name && bad[1].fields['representative.email'], 'API validation 422 with fields');

@@ -1,6 +1,6 @@
 // Хурдан smoke шалгалт: ажиллаж буй сервер (локал dev-server, `wrangler dev` эсвэл Cloudflare) дээр гол урсгалыг хэдхэн секундэд.
 //   node scripts/smoke.mjs [baseUrl]        (анхдагч: http://localhost:8787 — wrangler dev-ийн порт; Cloudflare: npm run cf:smoke -- https://...workers.dev)
-// Демо өгөгдөл (npm run cf:setup-д «демо» сонгосон, эсвэл dev-server) орсон байх ёстой — нууц үг Demo1234.
+// Демо өгөгдөл (npm run cf:setup-д «демо» сонгосон, эсвэл dev-server) орсон байх ёстой — нууц үг q123456.
 // ⚠ Өгөгдлийг өөрчилнэ (гэрээг буцааж, дахин байршуулж, баталгаажуулна) — жинхэнэ өгөгдөл дээр бүү ажиллуул.
 // Юуг шалгадаг: нэвтрэлт (PBKDF2), D1 унших/бичих/batch, R2 файл байршуулж буцааж татах (байт бүр ижил эсэх), гэрээний урсгал, бүртгэл.
 const base = (process.argv[2] ?? 'http://localhost:8787').replace(/\/$/, '');
@@ -27,7 +27,7 @@ class Client {
     return { status: res.status, data: text ? JSON.parse(text) : null };
   }
   async login(email) {
-    const r = await this.send('POST', '/api/auth/login', { json: { email, password: 'Demo1234' } });
+    const r = await this.send('POST', '/api/auth/login', { json: { email, password: 'q123456' } });
     assert(r.status === 200, `нэвтрэх ${email} → ${r.status} ${JSON.stringify(r.data)}`);
     await this.send('POST', '/api/me/consent', { json: {} });
   }
@@ -47,17 +47,17 @@ await step('статик UI (index.html)', async () => { const r = await fetch(`
 await step('backend файлууд нийтлэгдээгүй (server/index.js → 404)', async () => { const r = await fetch(`${base}/server/index.js`); assert(r.status === 404, `status ${r.status}`); });
 await step('нэвтрээгүй үед /api/me → 401', async () => { assert((await new Client().send('GET', '/api/me')).status === 401, 'хамгаалагдаагүй'); });
 await step('CSRF: толгойгүй POST → 403', async () => { const r = await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }); assert(r.status === 403, `status ${r.status}`); });
-await step('буруу нууц үг → 401', async () => { const r = await new Client().send('POST', '/api/auth/login', { json: { email: 'suvd@university.example', password: 'wrong' } }); assert(r.status === 401, `status ${r.status}`); });
+await step('буруу нууц үг → 401', async () => { const r = await new Client().send('POST', '/api/auth/login', { json: { email: 'supervisor4@gmail.com', password: 'wrong' } }); assert(r.status === 401, `status ${r.status}`); });
 
-const roles = { 'admin@university.example': '/api/admin/users', 'head@university.example': '/api/head/contracts', 'bayarsaikhan@university.example': '/api/me',
-  'tsetseg@university.example': '/api/student/dashboard', 'ganbaatar@narlag.example': '/api/me', 'zoljargal@narlag.example': '/api/me' };
+const roles = { 'admin@gmail.com': '/api/admin/users', 'head@gmail.com': '/api/head/contracts', 'supervisor1@gmail.com': '/api/me',
+  'student9@gmail.com': '/api/student/dashboard', 'mentor1@gmail.com': '/api/me', 'org1@gmail.com': '/api/me' };
 for (const [email, path] of Object.entries(roles)) {
   await step(`${email}: нэвтрэх + ${path}`, async () => { const c = new Client(); await c.login(email); const r = await c.send('GET', path); assert(r.status === 200, `status ${r.status}`); });
 }
 
 const student = new Client(); const head = new Client();
 await step('гэрээ: эрхлэгч буцаана (D1 бичих)', async () => {
-  await student.login('tsetseg@university.example'); await head.login('head@university.example');
+  await student.login('student9@gmail.com'); await head.login('head@gmail.com');
   const c = (await student.send('GET', '/api/student/contract')).data;
   assert(c, 'гэрээ алга — демо өгөгдөл орсон уу?');
   if (c.status === 'scanned') { const r = await head.send('POST', `/api/head/contracts/${c.internship_id ?? 9}/return`, { json: { reason: 'smoke шалгалт' } }); assert(r.status === 204, `return ${r.status} ${JSON.stringify(r.data)}`); }
@@ -95,7 +95,7 @@ await step('байгууллага бүртгүүлэх (олон мөр бич�
   assert(r.status === 200, `талбарын алдаа: ${JSON.stringify(r.data?.fields)} (маягтын шаардлага өөрчлөгдсөн бол энэ скриптийг засна)`);
 });
 await step('нууц үг сэргээх (имэйл илгээх зам; алдаа гарсан ч 200)', async () => {
-  const r = await new Client().send('POST', '/api/auth/password/forgot', { json: { email: 'suvd@university.example' } });
+  const r = await new Client().send('POST', '/api/auth/password/forgot', { json: { email: 'supervisor4@gmail.com' } });
   assert(r.status === 200, `status ${r.status}`);
 });
 

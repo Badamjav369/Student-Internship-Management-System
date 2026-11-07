@@ -26,7 +26,8 @@ async function unzip(buf, wanted) {
   }
   return out;
 }
-const unescape = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
+// XML entity: &lt; &gt; &quot; &apos; &amp; ба тооны хэлбэр (&#1043; &#x413;) — зарим программ (жишээ нь Python openpyxl) кирилл үсгийг ингэж бичдэг.
+const unescape = (s) => s.replace(/&#(\d+);|&#x([0-9a-f]+);/gi, (_, d, h) => String.fromCodePoint(d ? Number(d) : parseInt(h, 16))).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
 const colIndex = (ref) => [...ref.replace(/\d+/g, '')].reduce((a, c) => a * 26 + c.charCodeAt(0) - 64, 0) - 1;
 
 /** → [[cell, ...], ...] (эхний хуудас). */

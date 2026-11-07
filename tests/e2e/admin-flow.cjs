@@ -15,7 +15,7 @@ const base = 'http://localhost:5174/#';
   const step = async (name, fn) => { cur = name; try { const r = await fn(); if (r === false) throw new Error('assert'); console.log('ok   ' + name); } catch (e) { fails++; console.log('FAIL ' + name + ' :: ' + e.message.split('\n')[0]); } };
   await page.goto(base + '/admin/home', { waitUntil: 'load' }); await page.waitForTimeout(1500);
   await step('home todo', async () => (await text()).includes('2 оюутанд удирдагч'));
-  await step('home → no-supervisor filter', async () => { await page.click('text=Удирдагч оноох'); await page.waitForTimeout(600); return (await text()).includes('2 оюутан') && !(await text()).includes('16 оюутан'); });
+  await step('home → no-supervisor filter', async () => { await page.click('text=Удирдагч оноох'); await page.waitForFunction(() => document.body.innerText.includes('2 оюутан'), null, { timeout: 5000 }).catch(() => {}); return (await text()).includes('2 оюутан') && !(await text()).includes('16 оюутан'); });
   await step('bulk assign', async () => {
     await page.click('button:has-text("Багцаар оноох")');
     const boxes = page.locator('.row-check'); await boxes.nth(0).check(); await boxes.nth(1).check();

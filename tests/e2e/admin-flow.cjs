@@ -49,8 +49,8 @@ const base = 'http://localhost:5174/#';
   });
   await step('internship stop', async () => { await page.fill('textarea[name=reason]', 'Оюутан татгалзсан'); await page.click('button:has-text("Шийдвэр бүртгэх")'); await page.waitForTimeout(800); return (await text()).includes('Зогсоосон'); });
   await step('internship extend', async () => {
-    await go('/admin/internships/1'); await page.locator('.kind-card:has-text("Хугацаа сунгах")').click(); await page.fill('input[name=end_date]', '2026-11-25');
-    await page.fill('textarea[name=reason]', 'Ажил үргэлжилж байна'); await page.click('button:has-text("Шийдвэр бүртгэх")'); await page.waitForTimeout(800); return (await text()).includes('2026.11.25');
+    await go('/admin/internships/1'); await page.locator('.kind-card:has-text("Хугацаа сунгах")').click(); await page.fill('input[name=end_date]', '2026-12-09');
+    await page.fill('textarea[name=reason]', 'Ажил үргэлжилж байна'); await page.click('button:has-text("Шийдвэр бүртгэх")'); await page.waitForTimeout(800); return (await text()).includes('2026.12.09');
   });
   await step('create semester', async () => {
     await go('/admin/semesters'); await page.click('button:has-text("Улирал нэмэх")'); await page.fill('input[name=academic_year]', '27-28'); await page.click('button:has-text("Үүсгэх")'); await page.waitForTimeout(300);

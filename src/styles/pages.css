@@ -44,11 +44,51 @@
 @keyframes pp-pulse { 50% { transform: scale(1.22); opacity: 0.14; } }
 
 /* ---------- Нүүр: хийх ажил ---------- */
-.todo-list { display: grid; gap: var(--s-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); }
-.todo-item { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr auto; align-items: start; gap: var(--s-3) var(--s-4); padding: var(--s-4); border-radius: var(--r-lg); background: var(--surface-2); border: 1px solid var(--line); }
-.todo-body { min-width: 0; display: grid; gap: 4px; }
+.todo-board { display: grid; gap: var(--s-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); }
+.todo-board > li { list-style: none; }
+.todo-board .todo-hero { grid-column: 1 / -1; }
+.todo-board.solo { grid-template-columns: 1fr; }
+.todo-total { margin-left: var(--s-3); padding: 2px 10px; border-radius: var(--r-pill); background: var(--accent-soft); color: var(--accent-text); font-size: var(--fs-sm); font-weight: 600; vertical-align: middle; }
+/* Өнгө: ажил бүрийн tone-оор (--tc: тод, --tb: зөөлөн дэвсгэр) */
+.todo-tone-amber { --tc: var(--amber-fg); --tb: var(--amber-bg); }
+.todo-tone-rose { --tc: var(--rose-fg); --tb: var(--rose-bg); }
+.todo-tone-blue { --tc: var(--blue-fg); --tb: var(--blue-bg); }
+.todo-tone-green { --tc: var(--green-fg); --tb: var(--green-bg); }
+.todo-tone-violet { --tc: var(--violet-fg); --tb: var(--violet-bg); }
+.todo-tone-gray { --tc: var(--gray-fg); --tb: var(--gray-bg); }
+/* Жижиг карт */
+.todo-item { position: relative; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr auto; align-items: start; gap: var(--s-3) var(--s-4); padding: var(--s-4) var(--s-4) var(--s-4) calc(var(--s-4) + 4px); border-radius: var(--r-lg); background: var(--surface-2); border: 1px solid var(--line); transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
+.todo-item::before { content: ""; position: absolute; left: 0; top: var(--s-4); bottom: var(--s-4); width: 4px; border-radius: 0 4px 4px 0; background: color-mix(in srgb, var(--tc) 65%, var(--surface-2)); }
+.todo-item:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--tc) 40%, var(--line)); box-shadow: var(--shadow-sm); }
+.todo-body { min-width: 0; display: grid; gap: var(--s-2); justify-items: start; }
 .todo-text { font-weight: 500; }
 .todo-item > .button { grid-column: 1 / -1; justify-self: end; }
+/* Том карт (хамгийн чухал ажил) */
+.todo-hero { position: relative; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "badge badge badge" "tile body action"; align-items: center; gap: var(--s-3) var(--s-5); padding: var(--s-5) var(--s-6); border-radius: var(--r-xl); background: linear-gradient(135deg, color-mix(in srgb, var(--tb) 85%, var(--surface-2)) 0%, var(--surface-2) 75%); border: 1px solid color-mix(in srgb, var(--tc) 30%, var(--line)); }
+.todo-hero::before { content: ""; position: absolute; right: -4rem; top: -5rem; width: 15rem; height: 15rem; border-radius: 50%; background: radial-gradient(color-mix(in srgb, var(--tc) 11%, transparent), transparent 65%); pointer-events: none; }
+.todo-hero > * { position: relative; }
+.todo-hero > .todo-badge { grid-area: badge; justify-self: start; }
+.todo-hero > .tile { grid-area: tile; width: 3.5rem; height: 3.5rem; border-radius: var(--r-lg); background: color-mix(in srgb, var(--tc) 16%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tc) 32%, transparent); }
+.todo-hero > .todo-body { grid-area: body; }
+.todo-hero > .button { grid-area: action; justify-self: end; box-shadow: 0 8px 22px -10px var(--accent); }
+.todo-hero-text { font-size: var(--fs-lg, 1.25rem); font-weight: 600; line-height: 1.3; }
+.todo-hero:not(:has(.todo-badge)) { grid-template-areas: "tile body action"; }
+/* Шошго, явцын зурвас, том тоо */
+.todo-badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: var(--r-pill); background: var(--tb); color: var(--tc); font-size: var(--fs-sm); font-weight: 600; }
+.todo-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.todo-badge.live .todo-dot::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid currentColor; opacity: 0.5; }
+@media (prefers-reduced-motion: no-preference) { .todo-badge.live .todo-dot::after { animation: todo-ping 1.8s ease-out infinite; } }
+@keyframes todo-ping { from { transform: scale(0.6); opacity: 0.7; } to { transform: scale(1.6); opacity: 0; } }
+.todo-progress { width: 100%; display: grid; gap: 6px; }
+.todo-bar { height: 8px; border-radius: var(--r-pill); background: var(--line); overflow: hidden; }
+.todo-bar > i { display: block; height: 100%; border-radius: inherit; background: color-mix(in srgb, var(--tc) 75%, var(--surface-2)); }
+@media (prefers-reduced-motion: no-preference) { .todo-bar > i { animation: todo-grow 0.8s ease-out both; } }
+@keyframes todo-grow { from { width: 0; } }
+.todo-bar-label { display: flex; justify-content: space-between; font-size: var(--fs-sm); color: var(--ink-3); }
+.todo-count-big { font-size: var(--fs-sm); color: var(--ink-2); }
+.todo-count-big strong { font-size: 1.75rem; line-height: 1; font-weight: 600; color: var(--ink); }
+@media (prefers-reduced-motion: no-preference) { .todo-board > li { animation: todo-in 0.4s ease-out both; } .todo-board > li:nth-child(2) { animation-delay: 0.05s; } .todo-board > li:nth-child(3) { animation-delay: 0.1s; } .todo-board > li:nth-child(n+4) { animation-delay: 0.15s; } }
+@keyframes todo-in { from { opacity: 0; transform: translateY(8px); } }
 .tile { display: grid; place-items: center; flex: none; width: 3rem; height: 3rem; border-radius: var(--r-md); }
 .tile-amber { background: var(--amber-bg); color: var(--amber-fg); }
 .tile-rose { background: var(--rose-bg); color: var(--rose-fg); }
@@ -59,7 +99,12 @@
 .due-chip { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); color: var(--ink-2); }
 .due-chip.today { color: var(--amber-fg); font-weight: 500; }
 .due-chip.late { color: var(--rose-fg); font-weight: 500; }
-@media (width < 36em) { .todo-item > .button { justify-self: stretch; } }
+@media (width < 36em) {
+  .todo-item > .button { justify-self: stretch; }
+  .todo-hero { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "badge badge" "tile body" "action action"; padding: var(--s-4); }
+  .todo-hero:not(:has(.todo-badge)) { grid-template-areas: "tile body" "action action"; }
+  .todo-hero > .button { justify-self: stretch; text-align: center; }
+}
 
 /* ---------- Дадлагын байгууллага ---------- */
 /* Толгой, таб */

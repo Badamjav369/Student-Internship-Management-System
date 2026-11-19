@@ -50,7 +50,7 @@ const base = 'http://localhost:5174/#';
   await step('committee create', async () => { await go('/admin/committees'); await page.click('button:has-text("Комисс үүсгэх")'); await page.fill('input[name=name]', 'Комисс №2'); await page.click('form button:has-text("Үүсгэх")'); await page.waitForTimeout(900); return (await text()).includes('Комисс №2') && (await text()).includes('Нийтлээгүй'); });
   await step('committee publish blocked', async () => { await page.click('.page-head button:has-text("Нийтлэх")'); await confirm('Нийтлэх'); return (await toastText()).includes('Хамгаалах өдрийг тогтооно уу'); });
   await step('committee settings save', async () => {
-    await page.fill('input[name=defense_date]', '2026-12-09'); await page.fill('input[name=start_time]', '09:00'); await page.fill('input[name=location]', '3-р байр 101');
+    await page.fill('input[name=defense_date]', '2026-12-23'); await page.fill('input[name=start_time]', '09:00'); await page.fill('input[name=location]', '3-р байр 101');
     await page.locator('.member-row:has-text("Баярсайхан") input[type=checkbox]').check(); await page.locator('.member-row:has-text("Баярсайхан") input[type=radio]').check();
     await page.click('form button:has-text("Хадгалах")'); await page.waitForTimeout(800); return (await toastText()).includes('Тохиргоо хадгалагдлаа') && (await page.locator('input[name=location]').inputValue()) === '3-р байр 101';
   });

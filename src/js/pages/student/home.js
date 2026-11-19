@@ -27,10 +27,23 @@ function dueChip(item) {
   return h('p', { class: ['due-chip', tone] }, icon('clock', 13), h('time', { datetime: item.due }, formatDate(item.due)), ` · ${item.days_left === 0 ? 'өнөөдөр' : daysLeftText(item.days_left)}`);
 }
 
-function todoItems(todo) {
+function badgeOf(item) {
+  if (item.days_left === null) return null;
+  if (item.days_left < 0) return { text: 'Хоцорсон', tone: 'rose' };
+  if (item.days_left === 0) return { text: 'Өнөөдөр', tone: 'amber', live: true };
+  return null;
+}
+
+function todoItems(todo, info, today) {
   return todo.map((item) => {
     const [name, tone] = LOOK[item.key] ?? ['clock', 'violet'];
-    return { icon: name, tone, text: item.text, extra: dueChip(item), href: item.link, action: ACTIONS[item.key] ?? 'Нээх' };
+    const out = { icon: name, tone, text: item.text, extra: dueChip(item), href: item.link, action: ACTIONS[item.key] ?? 'Нээх', badge: badgeOf(item) };
+    if (item.key === 'work_ends' && info.start_date && item.days_left >= 0) {
+      out.progress = { from: info.start_date, to: info.end_date, now: today };
+      out.count = { n: item.days_left, unit: 'хоног үлдсэн' };
+      out.extra = null;
+    }
+    return out;
   });
 }
 
@@ -53,5 +66,5 @@ export async function render() {
     return h('section', {}, heroCard(user, data),
       emptyState('Бүртгэлтэй дадлага алга', 'Админ таныг улиралд нэмэхэд дадлага тань энд харагдана.'));
   }
-  return h('div', { class: 'stack' }, heroCard(user, data), todoPanel(todoItems(i.todo)));
+  return h('div', { class: 'stack' }, heroCard(user, data), todoPanel(todoItems(i.todo, i.info, data.today)));
 }

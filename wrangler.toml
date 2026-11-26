@@ -1,6 +1,6 @@
 # Cloudflare Workers тохиргоо: нэг Worker нь UI-г (статик файл) болон /api-г хоёуланг нь үйлчилнэ.
 # Анх: `npm run cf:setup` — D1, R2 үүсгэж database_id-г энд бичнэ, migration, өгөгдөл, deploy, SIGNING_SECRET бүгдийг хийнэ.
-# Дараагийн шинэчлэл: `npm run cf:deploy`. Бүрэн тайлбар: README.md §7.
+# Дараагийн шинэчлэл: `npm run cf:deploy`. Бүрэн тайлбар: README.md, «Cloudflare дээр байршуулах».
 # Нууц утгууд (MAIL_API_KEY, SIGNING_SECRET, TURNSTILE_SECRET) энд БИЧИХГҮЙ — `npx wrangler secret put <НЭР>`.
 name = "sims"
 main = "server/index.js"

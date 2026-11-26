@@ -595,3 +595,10 @@ INSERT INTO notifications (user_id, role, text, link, read_at, created_at) VALUE
 INSERT INTO notifications (user_id, role, text, link, read_at, created_at) VALUES (19, 'committee', 'Комисс №3-ийн хамгаалалтын хуваарь нийтлэгдлээ.', '/committee/committees', '2026-11-13T10:00:00Z', '2026-11-13T10:00:00Z');
 INSERT INTO notifications (user_id, role, text, link, read_at, created_at) VALUES (19, 'committee', 'Гантулга Золбоо хамгаалалтад бэлэн боллоо. Материалыг үзэж болно.', '/committee/students/4', NULL, '2026-11-16T14:00:00Z');
 INSERT INTO notifications (user_id, role, text, link, read_at, created_at) VALUES (19, 'committee', 'Жаргалсайхан Билгүүний оноог 3 гишүүн оруулсан. Таны оноо хүлээгдэж байна.', '/committee/students/7', NULL, '2026-11-18T09:20:00Z');
+-- Зөвхөн комиссын дүртэй демо хэрэглэгч: нэвтэрмэгц шууд комиссын дэлгэц рүү орно.
+INSERT INTO users (id, email, password_hash, last_name, first_name, phone, student_code, program, organization_id, position, status, consent_at) VALUES (28, 'committee@gmail.com', 'pbkdf2$100000$dbsrJXKrW5R1096+YEUElg==$trnJVo8LLjJcngReTF+0AqkgCDZwTt/E1V3lbCf2Jb0=', 'Цэндсүрэн', 'Алтанцэцэг', '99321746', NULL, NULL, NULL, NULL, 'active', '2026-10-15T09:00:00Z');
+INSERT INTO user_roles (user_id, role, semester_id) VALUES (28, 'committee', 2);
+INSERT INTO committees (id, semester_id, name, defense_date, start_time, format, location, online_url, published_at) VALUES (3, 2, 'Комисс №2', '2026-12-23', '10:00', 'onsite', 'Хичээлийн 2-р байр, 306 тоот', NULL, '2026-11-13T10:00:00Z');
+INSERT INTO committee_members (committee_id, user_id, is_chair) VALUES (3, 28, 1);
+INSERT INTO defense_slots (committee_id, internship_id, order_no, slot_time) VALUES (3, 5, 1, '10:00');
+INSERT INTO defense_slots (committee_id, internship_id, order_no, slot_time) VALUES (3, 6, 2, '10:40');
